@@ -7,14 +7,25 @@ pipeline {
                 echo 'Hello World'
             }
         }
-        stage('Git Checkout....') {
+        stage('Git Checkout') {
             steps {
-                checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[credentialsId: 'Github-id', url: 'https://github.com/dhuriviraj00/knx-devops-microservice-test.git']])
+                script {
+                    checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'github-id', url: 'https://github.com/dhuriviraj00/jenkins-pthon-dokcerCICD.git']]])
+                }
             }
         }
-        stage('Build Docker Image....') {
+        stage('Build Docker Image') {
             steps {
-                sh 'docker build -t dockervk23/docker76023:latest .'
+                script {
+                    sh 'docker build -t test .'
+                }
+            }
+        }
+        stage('Tag Docker Image') {
+            steps {
+                script {
+                    sh 'docker tag test dockervk23/docker76023:latest'
+                }
             }
         }
     }
