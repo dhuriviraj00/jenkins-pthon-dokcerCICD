@@ -17,14 +17,14 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh 'docker build -t test .'
+                    sh 'docker build -t project:v3 .'
                 }
             }
         }
         stage('Tag Docker Image') {
             steps {
                 script {
-                    sh 'docker tag test dockervk23/docker76023:latest'
+                    sh 'docker tag project:v3 "python /app/app.py …'
                 }
             }
         }
