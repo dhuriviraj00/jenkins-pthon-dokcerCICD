@@ -6,15 +6,39 @@ pipeline {
             steps {
                 echo 'Hello World'
             }
+pipeline {
+    agent any
+    environment{
+        dockerhub=credentials('docker')
+    }
         }
-        stage('Git Checkout....') {
+        stage('Git Checkout') {
             steps {
-                checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[credentialsId: 'Github-id', url: 'https://github.com/dhuriviraj00/knx-devops-microservice-test.git']])
+                script {
+                    checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'github-id', url: 'https://github.com/dhuriviraj00/jenkins-pthon-dokcerCICD.git']]])
+                }
             }
         }
-        stage('Build Docker Image....') {
+        stage('Build Docker Image') {
             steps {
-                sh 'docker build -t dockervk23/docker76023:latest .'
+                script {
+                    sh 'docker build -t project:v3 .'
+                }
+            }
+        }
+        stage('Tag Docker Image') {
+            steps {
+                script {
+                    sh 'docker tag project:v3 dockervk23/docker76023:latest'
+                }
+            }
+        }
+        stage('Publish Artifacts To Dockerhub') {
+            steps {
+                sh 'docker image ls'
+                sh 'docker logout'
+                sh 'echo $dockerhub_PSW | docker login -u $dockerhub_USR --password-stdin docker.io'
+                sh 'docker push dockervk23/docker76023:latest'
             }
         }
     }
